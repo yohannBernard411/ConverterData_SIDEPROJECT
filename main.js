@@ -49,7 +49,6 @@ function asClicker(){
         type = arrayOutput[j][0].trim().substring(1,2).toUpperCase() + arrayOutput[j][0].trim().substring(2,arrayOutput[j][0].trim().length-1).toLowerCase();
         outputResult.push('<p>' + "private " + type + " " + arrayOutput[j][0].substring(1, arrayOutput[j][0].length-1)+ ';' + '<p>');
         j = bornage[1]+1;
-        break;
       }
       switch(arrayOutput[j][1].trim().substring(0,1)){
         case '{':
