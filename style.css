@@ -4,7 +4,7 @@ h1{
 }
 .dispo{
   width: 100%;
-  height: 100%;
+  height: 450px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -15,7 +15,7 @@ h1{
 #input{
   border: 2px solid blue;
   width: 43vw;
-  height: 500px;
+  height: 350px;
 }
 #go{
   width: 100px;
@@ -25,6 +25,12 @@ h1{
 #output{
   border: 2px solid green;
   width: 43vw;
-  height: 500px;
+  height: 350px;
+  overflow-y: scroll;
+}
+#ngoutput{
+  border: 2px solid orange;
+  width: 43vw;
+  height: 350px;
   overflow-y: scroll;
 }

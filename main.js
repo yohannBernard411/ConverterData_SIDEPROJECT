@@ -1,5 +1,6 @@
 const input = document.getElementById('input');
 const output = document.getElementById('output');
+const ngoutput = document.getElementById('ngoutput');
 let dataAvecEspaces = [];
 let dataNonSplit = [];
 let data = [];
@@ -141,6 +142,7 @@ function asClicker(){
     }
   });
   output.innerText = outputResult.join('\n');
+  conversionAngular(outputResult);
 
  
   function booleanDetected(el){
@@ -155,4 +157,15 @@ function asClicker(){
     outputResult.push("private " + "Number" + " " + el[0].substring(1, el[0].length-1)+";");
     return;
   }
+}
+
+function conversionAngular(output){
+  let outputArray = [];
+  output.forEach(element => {
+    //private Number successful_launches;
+    //successful_launches: number;
+    let newLines = element.split(' ')[2].substring(0,element.split(' ')[2].length-1)+": "+element.split(' ')[1].toLowerCase()+";";
+    outputArray.push(newLines);
+  });
+  ngoutput.innerText = outputArray.join('\n');
 }
