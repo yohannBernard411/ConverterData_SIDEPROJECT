@@ -1,68 +1,127 @@
 const input = document.getElementById('input');
-const go = document.getElementById('go');
 const output = document.getElementById('output');
+let dataAvecEspaces = [];
+let dataNonSplit = [];
+let data = [];
+let outputResult = [];
+let currentLine = 0;
 
-function ObjectDetected(arrayOutput, j){
-  let bornageObjet = [];
-  bornageObjet.push(j);
-  let count = 0;
-  for (j; j<arrayOutput.length; j++){
-    if (arrayOutput[j][1]){
-      if (arrayOutput[j][1].trim().substring(0,1) === '}' && count===1){
-        bornageObjet.push(j);
+function asClicker(){
+  outputResult = [];
+  output.innerText = "";
+  //remise en forme des data
+  dataAvecEspaces = input.value.split("\n");
+  dataAvecEspaces.forEach(element => {
+    dataNonSplit.push(element.trim());
+  });
+  dataNonSplit.forEach(element =>{
+    data.push(element.split(':'));
+  });
+  //retrait des objets
+  let count = 0
+  let start = 0;
+  let end = 0;
+  let objetsASupprimer = [];
+  for(let rank = 0; rank<data.length; rank++){
+    currentLine ++;
+    if(data[rank][1]){
+      if(data[rank][1].trim().substring(0,1) === "{" && count === 0){
+        start = rank;
       }
-      if(arrayOutput[j][1].trim().substring(0,1) === '{'){
-        count += 1;
+      if(data[rank][1].trim().substring(0,1) === "}" && count === 1){
+        end = rank+1;
+        objetsASupprimer.push([start, end]);
       }
-      if(arrayOutput[j][1].trim().substring(0,1) === '}'){
-        count -= 1;
+      if(data[rank][1].trim().substring(0,1) === "{"){
+        count ++;
+      }
+      if(data[rank][1].trim().substring(0,1) === "}"){
+        count --;
       }
     }else{
-      if(arrayOutput[j][0].trim().substring(0,1) === '}' && count ===1){
-        bornageObjet.push(j);
+      if(data[rank][0].trim().substring(0,1) === "{" && count === 0){
+        start = rank;
       }
-      if(arrayOutput[j][0].trim().substring(0,1) === '{'){
-        count += 1;
+      if(data[rank][0].trim().substring(0,1) === "}" && count === 1){
+        end = rank+1;
+        objetsASupprimer.push([start, end]);
       }
-      if(arrayOutput[j][0].trim().substring(0,1) === '}'){
-        count -= 1;
+      if(data[rank][0].trim().substring(0,1) === "{"){
+        count ++;
+      }
+      if(data[rank][0].trim().substring(0,1) === "}"){
+        count --;
       }
     }
   }
-  return bornageObjet;
-}
-
-function asClicker(){
-  let lines = input.value.split("\n");
-  let newLines = []
-  let arrayOutput = [];
-  for(let i=0; i<lines.length; i++){
-    newLines = lines[i].trim().split(":");
-    arrayOutput.push(newLines);
-  }
-  let outputResult = [];
-  for(let j=0; j<arrayOutput.length; j++){
-    let type = "";
-    if(arrayOutput[j][1]){
-      if(arrayOutput[j][1].trim().substring(0,1) === '{'){
-        let bornage = ObjectDetected(arrayOutput, j);
-        type = arrayOutput[j][0].trim().substring(1,2).toUpperCase() + arrayOutput[j][0].trim().substring(2,arrayOutput[j][0].trim().length-1).toLowerCase();
-        outputResult.push('<p>' + "private " + type + " " + arrayOutput[j][0].substring(1, arrayOutput[j][0].length-1)+ ';' + '<p>');
-        j = bornage[1]+1;
+  objetsASupprimer = objetsASupprimer.reverse();
+  objetsASupprimer.forEach(element =>{
+    outputResult.push("private " + data[element[0]][0].substring(1,2).toUpperCase()+data[element[0]][0].substring(2,data[element[0]][0].length-1) + " " + data[element[0]][0].substring(1,data[element[0]][0].length-1)+";");
+    data.splice(element[0], element[1]-element[0]);
+  });
+  //retrait des arrays
+  count = 0
+  start = 0;
+  end = 0;
+  let arrayASupprimer = [];
+  for(let rank = 0; rank<data.length; rank++){
+    currentLine ++;
+    if(data[rank][1]){
+      if(data[rank][1].trim().substring(0,1) === "[" && count === 0){
+        start = rank;
+        if(data[rank][1].trim().substring(1,2) === "]"){
+          end = rank+1;
+          arrayASupprimer.push([start, end]);
+          count --;
+        }
       }
-      switch(arrayOutput[j][1].trim().substring(0,1)){
-        case '{':
-          type = "Objet";
-        break;
-        case '[':
-          type = "Array";
-        break;
+      if(data[rank][1].trim().substring(0,1) === "]" && count === 1){
+        end = rank+1;
+        arrayASupprimer.push([start, end]);
+      }
+      if(data[rank][1].trim().substring(0,1) === "["){
+        count ++;
+      }
+      if(data[rank][1].trim().substring(0,1) === "]"){
+        count --;
+      }
+    }else{
+      if(data[rank][0].trim().substring(0,1) === "[" && count === 0){
+        start = rank;
+        if(data[rank][1].trim().substring(1,2) === "]"){
+          end = rank+1;
+          arrayASupprimer.push([start, end]);
+          count --;
+        }
+      }
+      if(data[rank][0].trim().substring(0,1) === "]" && count === 1){
+        end = rank+1;
+        arrayASupprimer.push([start, end]);
+      }
+      if(data[rank][0].trim().substring(0,1) === "["){
+        count ++;
+      }
+      if(data[rank][0].trim().substring(0,1) === "]"){
+        count --;
+      }
+    }
+  }
+  arrayASupprimer = arrayASupprimer.reverse();
+  arrayASupprimer.forEach(element =>{
+    outputResult.push("private ArrayList<"+ data[element[0]][0].substring(1,2).toUpperCase()+data[element[0]][0].substring(2,data[element[0]][0].length-1) + "> " + data[element[0]][0].substring(1,data[element[0]][0].length-1)+";");
+    data.splice(element[0], element[1]-element[0]);
+  });
+  //detection type de donnees
+  data.forEach(array =>{
+    currentLine ++;
+    if(array[1]){
+      switch(array[1].trim().substring(0,1)){
         case 't':
         case'f':
-          type = "Boolean";
+          booleanDetected(array);
         break;
         case '"':
-          type = "String";
+          stringDetected(array);
         break;
         case '0':
         case '1':
@@ -74,13 +133,26 @@ function asClicker(){
         case '7':
         case '8':
         case '9':
-          type = "Number";
+          numberDetected(array);
         break;
         default:
-          type = "Inconnu";
+          stringDetected(array);
       }
-      outputResult.push('<p>' + "private " + type + " " + arrayOutput[j][0].substring(1, arrayOutput[j][0].length-1)+ ';' + '<p>');
     }
+  });
+  output.innerText = outputResult.join('\n');
+
+ 
+  function booleanDetected(el){
+    outputResult.push("private " + "Boolean" + " " + el[0].substring(1, el[0].length-1)+";");
+    return;
   }
-  output.innerHTML = outputResult.join('');
+  function stringDetected(el){
+    outputResult.push("private " + "String" + " " + el[0].substring(1, el[0].length-1)+";");
+    return;
+  }
+  function numberDetected(el){
+    outputResult.push("private " + "Number" + " " + el[0].substring(1, el[0].length-1)+";");
+    return;
+  }
 }
